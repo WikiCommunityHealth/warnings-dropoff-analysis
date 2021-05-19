@@ -22,10 +22,10 @@ def extract_metrics(
         Iterator[UserMetrics]: user's in drop-off metrics
     """
 
-    print('Current amount of elements in the collection: {}'.format(collection.num_documents))
+    print('Current count of elements in the collection: {}'.format(collection.num_documents))
     counter = 0
-    # filter the users: only those who have recieved some warnings
-    for user in collection.service.find({'user_warnings_recieved': { "$exists": True }}):
+    # filter the users: only those who have received some warnings
+    for user in collection.service.find({'user_warnings_received': { "$exists": True }}):
         # retirement metrics
         metrics, ambiguous = retired_extractor.extract_metrics(user, month_to_be_considered_retired)
 

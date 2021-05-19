@@ -33,7 +33,8 @@ wiki_warnings/
 wiki_lang/
 
 # output folder
-output
+output/*
+!output/.gitkeep
 
 # loaders folder
 loaders

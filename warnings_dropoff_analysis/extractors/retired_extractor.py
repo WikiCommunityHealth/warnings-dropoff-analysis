@@ -39,7 +39,7 @@ def monthdelta(date, delta):
 
     Args:
         date ([datetime]): date
-        delta ([int]): month amount
+        delta ([int]): month count
 
     Returns:
         return date [datetime]: date after the subtraction
@@ -67,9 +67,6 @@ def extract_metrics(user: dict, month_to_be_considered_retired: int) -> Tuple[Op
     has_template, retirement_info = retired_template_extractor(user)
     # last edit date and drop-off check
     last_edit_date, in_drop_off, ambiguous = retired_edit_treshold_extractor(has_template, user, month_to_be_considered_retired)
-    
-    if (not in_drop_off) and has_template:
-        print(user['username'])
 
     # user not in the target audience
     if not in_drop_off:
@@ -82,9 +79,9 @@ def extract_metrics(user: dict, month_to_be_considered_retired: int) -> Tuple[Op
         retire_date = None
 
     # warnings metrics
-    last_warnings, warnings_amount, warnings_history = retrieve_warninigs(user)
+    last_warnings, warnings_count, warnings_history = retrieve_warninigs(user)
     # edits metrics
-    edit_amount_after_retirement, average_metrics, edit_history = retrieve_activities(has_template, retire_date, user, last_warnings, last_edit_date)
+    edit_count_after_retirement, average_metrics, edit_history = retrieve_activities(has_template, retire_date, user, last_warnings, last_edit_date)
 
     return UserMetrics(
         name = user['username'],
@@ -94,26 +91,26 @@ def extract_metrics(user: dict, month_to_be_considered_retired: int) -> Tuple[Op
         retire_date = retire_date,
         last_edit_month = last_edit_date.month,
         last_edit_year =  last_edit_date.year,
-        edit_amount_after_retirement = edit_amount_after_retirement,
+        edit_count_after_retirement = edit_count_after_retirement,
         # last elements
         last_serious_warning = last_warnings['serious'],
         last_normal_warning = last_warnings['warning'],
         last_not_serious_warning = last_warnings['not_serious'],
         # average before
-        average_edit_amount_before_last_serious_warning_date = average_metrics['serious']['before'],
-        average_edit_amount_before_last_normal_warning_date = average_metrics['warning']['before'],
-        average_edit_amount_before_last_not_serious_warning_date = average_metrics['not_serious']['before'],
+        average_edit_count_before_last_serious_warning_date = average_metrics['serious']['before'],
+        average_edit_count_before_last_normal_warning_date = average_metrics['warning']['before'],
+        average_edit_count_before_last_not_serious_warning_date = average_metrics['not_serious']['before'],
         # average after
-        average_edit_amount_after_last_serious_warning_date = average_metrics['serious']['after'],
-        average_edit_amount_after_last_normal_warning_date = average_metrics['warning']['after'],
-        average_edit_amount_after_last_not_serious_warning_date = average_metrics['not_serious']['after'],
-        # amount
-        amount_serious_templates_transcluded = warnings_amount['serious_transcluded'],
-        amount_warning_templates_transcluded = warnings_amount['warning_transcluded'],
-        amount_not_serious_templates_transcluded = warnings_amount['not_serious_transcluded'],
-        amount_serious_templates_substituted = warnings_amount['serious_substituted'],
-        amount_warning_templates_substituted = warnings_amount['warning_substituted'],
-        amount_not_serious_templates_substituted = warnings_amount['not_serious_substituted'],
+        average_edit_count_after_last_serious_warning_date = average_metrics['serious']['after'],
+        average_edit_count_after_last_normal_warning_date = average_metrics['warning']['after'],
+        average_edit_count_after_last_not_serious_warning_date = average_metrics['not_serious']['after'],
+        # count
+        count_serious_templates_transcluded = warnings_count['serious_transcluded'],
+        count_warning_templates_transcluded = warnings_count['warning_transcluded'],
+        count_not_serious_templates_transcluded = warnings_count['not_serious_transcluded'],
+        count_serious_templates_substituted = warnings_count['serious_substituted'],
+        count_warning_templates_substituted = warnings_count['warning_substituted'],
+        count_not_serious_templates_substituted = warnings_count['not_serious_substituted'],
         # history
         edit_history = edit_history,
         warnings_history = warnings_history
@@ -127,12 +124,12 @@ def retrieve_warninigs(user: dict) -> Tuple[dict, dict, dict]:
         user (dict): user element in the collection
 
     Returns:
-        list[dict, dict, dict]: respectively the info about the last warnings recieved, 
-            the total amount of user warnings recieved, 
-            history of the warnings recieved
+        list[dict, dict, dict]: respectively the info about the last warnings received, 
+            the total count of user warnings received, 
+            history of the warnings received
     """
     last_warnings: dict = {'not_serious': dict(), 'warning':dict(), 'serious':dict()}
-    amounts_uw: dict = {
+    counts_uw: dict = {
         'serious_transcluded': 0,
         'warning_transcluded': 0,
         'warning_substituted': 0,
@@ -141,7 +138,7 @@ def retrieve_warninigs(user: dict) -> Tuple[dict, dict, dict]:
         'not_serious_substituted': 0
     }
 
-    for uw in user['user_warnings_recieved']:
+    for uw in user['user_warnings_received']:
         if not last_warnings[uw['category']]:
             last_warnings[uw['category']] = dict()
 
@@ -154,9 +151,9 @@ def retrieve_warninigs(user: dict) -> Tuple[dict, dict, dict]:
     for year in user['user_warnings_stats']:
         for month in user['user_warnings_stats'][year]:
             for stat in user['user_warnings_stats'][year][month]:
-                amounts_uw[stat] += user['user_warnings_stats'][year][month][stat]
+                counts_uw[stat] += user['user_warnings_stats'][year][month][stat]
 
-    return last_warnings, amounts_uw, user['user_warnings_stats']
+    return last_warnings, counts_uw, user['user_warnings_stats']
 
 def retired_template_extractor(user: dict) -> Tuple[bool, dict]:
     """
@@ -251,9 +248,9 @@ def retrieve_activities(declared_retirement: bool, retirement_date: Optional[dat
     edit_history = dict()
     
     if declared_retirement:
-        edit_amount_after_retirement = 0
+        edit_count_after_retirement = 0
     else:
-        edit_amount_after_retirement = None
+        edit_count_after_retirement = None
     
     first_edit_date_year =  min(int(k) for k in user['events']['per_month'])
     first_edit_month = min(int(k) for k in user['events']['per_month'][str(first_edit_date_year)])
@@ -293,13 +290,19 @@ def retrieve_activities(declared_retirement: bool, retirement_date: Optional[dat
 
                 
                 if declared_retirement and datetime(year, i_month, 1) > retirement_date.replace(tzinfo=None):
-                    edit_amount_after_retirement += total_activities
+                    edit_count_after_retirement += total_activities
 
                 edit_history[year][i_month] = total_activities
 
+                # updating the average metrics according to the target (counting before or after) (key represents the type of warning)
                 for key, value in target.items():
-                    average_metrics[key][value] += total_activities
-                    average_metrics[key]['months_{}'.format(value)] += 1
+                    # we are counting 6 month before and afer the last warning to compute the average count
+                    if last_warnings[key]:
+                        is_before_6_month: bool = (value == 'before' and datetime(year, i_month, 1) >= monthdelta(last_warnings[key]['date'].replace(tzinfo=None), -6))
+                        is_after_6_month: bool = (value == 'after' and datetime(year, i_month, 1) <= monthdelta(last_warnings[key]['date'].replace(tzinfo=None), +6))
+                        if is_before_6_month or is_after_6_month:
+                            average_metrics[key][value] += total_activities
+                            average_metrics[key]['months_{}'.format(value)] += 1
         else:
             # year of inactivity
             for key, value in target.items():
@@ -311,4 +314,4 @@ def retrieve_activities(declared_retirement: bool, retirement_date: Optional[dat
         if average_metrics[categories]['months_after']:
             average_metrics[categories]['after'] /= average_metrics[categories]['months_after']
 
-    return edit_amount_after_retirement, average_metrics, edit_history
+    return edit_count_after_retirement, average_metrics, edit_history

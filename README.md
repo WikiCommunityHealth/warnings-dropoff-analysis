@@ -77,25 +77,25 @@ The data retrived by the script is in the following format:
   "last_edit_year": 2015,
   "retirement_declared": false,
   "retire_date": null,
-  "edit_amount_after_retirement": null,
+  "edit_count_after_retirement": null,
   "last_serious_warning": {
     "name": "avvisoimmagine",
     "date": "2005-10-17 21:00:06+00:00"
   },
   "last_normal_warning": {},
   "last_not_serious_warning": {},
-  "average_edit_amount_before_last_serious_warning_date": 0.020689655172413793,
-  "average_edit_amount_before_last_normal_warning_date": 0.03267411865864144,
-  "average_edit_amount_before_last_not_serious_warning_date": 0.03267411865864144,
-  "average_edit_amount_after_last_serious_warning_date": 0.03983516483516483,
-  "average_edit_amount_after_last_normal_warning_date": 0,
-  "average_edit_amount_after_last_not_serious_warning_date": 0,
-  "amount_serious_templates_transcluded": 1,
-  "amount_warning_templates_transcluded": 0,
-  "amount_not_serious_templates_transcluded": 0,
-  "amount_serious_templates_substituted": 0,
-  "amount_warning_templates_substituted": 0,
-  "amount_not_serious_templates_substituted": 0,
+  "average_edit_count_before_last_serious_warning_date": 0.020689655172413793,
+  "average_edit_count_before_last_normal_warning_date": 0.03267411865864144,
+  "average_edit_count_before_last_not_serious_warning_date": 0.03267411865864144,
+  "average_edit_count_after_last_serious_warning_date": 0.03983516483516483,
+  "average_edit_count_after_last_normal_warning_date": 0,
+  "average_edit_count_after_last_not_serious_warning_date": 0,
+  "count_serious_templates_transcluded": 1,
+  "count_warning_templates_transcluded": 0,
+  "count_not_serious_templates_transcluded": 0,
+  "count_serious_templates_substituted": 0,
+  "count_warning_templates_substituted": 0,
+  "count_not_serious_templates_substituted": 0,
   "edit_history": {
     "2001": {
       "1": 0,
@@ -168,21 +168,21 @@ A brief description of the fields
 - `last_edit_year` year of the last edit date
 - `retirement_declared` is a boolean field representing whether the user has specified a retirement template or not on their user page or user talk page
 - `retire_date` the retirement date if specified
-- `last_serious_warning` last serious warning transcluded recieved
-- `last_normal_warning` last warning transcluded of the warning category recieved 
-- `last_not_serious_warning` last non serious warning transcluded recieved
-- `average_edit_amount_before_last_serious_warning_date` average amount of actions the user has made before the last serious warning date
-- `average_edit_amount_before_last_normal_warning_date` average amount of actions the user has made before the last warning date
-- `average_edit_amount_before_last_not_serious_warning_date` average amount of action the user has made before the last not serious warning date
-- `average_edit_amount_after_last_serious_warning_date` average amount of action the user has made after the last serious warning date
-- `average_edit_amount_after_last_normal_warning_date` average amount of action the user has made after the last warning date
-- `average_edit_amount_after_last_not_serious_warning_date` average amount of action the user has made after the last not serious warning date
-- `amount_serious_templates_transcluded` amount of transcluded serious warnings templates the user have recived
-- `amount_warning_templates_transcluded` amount of transcluded warnings templates the user have recived
-- `amount_not_serious_templates_transcluded` amount of transcluded not serious warnings templates the user have recived
-- `amount_serious_templates_substituted` amount of substituted serious warnings templates the user have recived
-- `amount_warning_templates_substituted` amount of substituted warnings templates the user have recived
-- `amount_not_serious_templates_substituted` amount of substituted not serious warnings templates the user have recived
+- `last_serious_warning` last transcluded serious warning received
+- `last_normal_warning` last transcluded warning of the warning category received 
+- `last_not_serious_warning` last transcluded non serious warning received
+- `average_edit_count_before_last_serious_warning_date` average count of actions the user has made before the last serious warning date (in the range of [date - 6 months, date])
+- `average_edit_count_before_last_normal_warning_date` average count of actions the user has made before the last warning date (in the range of [date - 6 months, date])
+- `average_edit_count_before_last_not_serious_warning_date` average count of action the user has made before the last not serious warning date (in the range of [date - 6 months])
+- `average_edit_count_after_last_serious_warning_date` average count of action the user has made after the last serious warning date (in the range of [date, date + 6 months])
+- `average_edit_count_after_last_normal_warning_date` average count of action the user has made after the last warning date (in the range of [date, date + 6 months])
+- `average_edit_count_after_last_not_serious_warning_date` average count of action the user has made after the last not serious warning date (in the range of [date, date + 6 months])
+- `count_serious_templates_transcluded` count of transcluded serious warnings templates the user have received
+- `count_warning_templates_transcluded` count of transcluded warnings templates the user have received
+- `count_not_serious_templates_transcluded` count of transcluded not serious warnings templates the user have received
+- `count_serious_templates_substituted` count of substituted serious warnings templates the user have received
+- `count_warning_templates_substituted` count of substituted warnings templates the user have received
+- `count_not_serious_templates_substituted` count of substituted not serious warnings templates the user have received
 - `edit_history` history of the user's activity per month
 - `warnings_history`  history of the user's warnings per month
 

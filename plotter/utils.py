@@ -3,14 +3,19 @@ import matplotlib.pyplot as plt
 import matplotlib
 from datetime import datetime
 from typing import Any, Tuple
+import os
 
 matplotlib.use('agg')
-OUTPUT_FOLDER = 'plots'
+output_folder = 'plots'
 EXT = 'svg'
+
+def create_folder_if_not_exists(lang: str) -> None:
+    os.makedirs(os.path.dirname('{}/{}'.format(output_folder, lang)), exist_ok=True)
+    output_folder = '/'.join([output_folder, lang])
 
 def user_data_extraction(user: pd.DataFrame) -> pd.DataFrame:
     """
-    Retrieves warnings date and user's activity amount per month 
+    Retrieves warnings date and user's activity count per month 
 
     Args:
         user (pd.DataFrame): user 
@@ -38,7 +43,7 @@ def user_data_extraction(user: pd.DataFrame) -> pd.DataFrame:
                 }
             user_data.append({
                 'date': datetime(int(year), int(month), 1), 
-                'activities amount': data[year][month], 
+                'activities count': data[year][month], 
                 'serious warnings': warnings_value['serious_transcluded'],
                 'warnings': warnings_value['warning_transcluded'],
                 'not serious warnings': warnings_value['not_serious_transcluded'],
@@ -71,7 +76,7 @@ def plot_pie_chart(title: str, data: list[float], labels: list[str]) -> None:
     plt.figure(figsize=(16, 8))
     plt.title(title)
     plt.pie(data, labels, autopct='%1.1f%%')
-    plt.savefig('{}/{}.{}'.format(OUTPUT_FOLDER, title, EXT))
+    plt.savefig('{}/{}.{}'.format(output_folder, title, EXT))
 
 def plot_bar_chart(title: str, y: list[int], x: list[Any]) -> None:
     """
@@ -84,7 +89,7 @@ def plot_bar_chart(title: str, y: list[int], x: list[Any]) -> None:
     plt.figure(figsize=(20, 8))
     plt.title(title)
     plt.bar(y, x)
-    plt.savefig('{}/{}.{}'.format(OUTPUT_FOLDER, title, EXT))
+    plt.savefig('{}/{}.{}'.format(output_folder, title, EXT))
 
 def plot_line_chart(x: pd.Series, y: list[Tuple[pd.Series, str]], title: str, ylabel: str, xlabel: str) -> None:
     """
@@ -104,7 +109,7 @@ def plot_line_chart(x: pd.Series, y: list[Tuple[pd.Series, str]], title: str, yl
     plt.title(title, fontsize=16)
     plt.ylabel(ylabel)
     plt.xlabel(xlabel)
-    plt.savefig('{}/{}.{}'.format(OUTPUT_FOLDER, title, EXT))
+    plt.savefig('{}/{}.{}'.format(output_folder, title, EXT))
 
 def plot_line_chart_with_vertical_lines(x: pd.Series, y: list[Tuple[pd.Series, str]], title: str, ylabel: str, xlabel: str, vlinesx: list[Tuple[pd.Series, str]], ymin: int, ymax: int) -> None:
     """
@@ -129,4 +134,4 @@ def plot_line_chart_with_vertical_lines(x: pd.Series, y: list[Tuple[pd.Series, s
     plt.title(title, fontsize=16)
     plt.ylabel(ylabel)
     plt.xlabel(xlabel)
-    plt.savefig('{}/{}.{}'.format(OUTPUT_FOLDER, title, EXT))
+    plt.savefig('{}/{}.{}'.format(output_folder, title, EXT))
