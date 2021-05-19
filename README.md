@@ -9,7 +9,7 @@ The collections should be obtained merging the outcomes of [user-metrics](https:
 Clone this repository
 
 ```bash
-git clone https://github.com/
+git clone https://github.com/WikiCommunityHealth/warnings-dropoff-analysis.git
 ```
 
 Create the poetry project virtual environment using your current python version
