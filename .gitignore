@@ -1,0 +1,49 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+.pytest_cache
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+.tox/
+.coverage
+.cache
+nosetests.xml
+coverage.xml
+
+# Pydoc documentation
+docs/
+
+# Real dotenv
+.env
+
+# Elements in the output folder
+output/*
+
+# consider the .gitkeep element
+!output/.gitkeep 
+
+# wiki_breaks loading and wiki_sex loading folders
+wiki_sex/
+wiki_breaks/
+wiki_warnings/
+wiki_lang/
+
+# output folder
+output
+
+# loaders folder
+loaders
+
+# plot folder
+plots/*
+!plots/.gitkeep
+
+# python version
+.python-version
+
+# test folder
+tests

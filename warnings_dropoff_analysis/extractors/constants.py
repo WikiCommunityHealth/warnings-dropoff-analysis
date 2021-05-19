@@ -1,0 +1,35 @@
+# -*- coding: utf-8 -*-
+
+# retired template keywords list
+retired_template_list = [
+    'visszavonult', 
+    'lämnat', 
+    '永遠離開', 
+    'utilizator retras', 
+    'کاربر بازنشسته', 
+    'vertrokken', 
+    'অবসরপ্রাপ্ত', 
+    'retraité', 
+    'pasitraukęs', 
+    'պաշտոնաթող', 
+    'විශ් රාමික', 
+    'повлечен корисник', 
+    'سبک دوش', 
+    'emekli', 
+    'deaktiviert', 
+    'pènsiyun', 
+    'పూర్తి విరమణ', 
+    'usuário inativo', 
+    'qeyri-aktiv', 
+    'சுயவிடுப்பு', 
+    'đã nghỉ việc', 
+    'متقاعد', 'retired', 
+    'usuario retirado', 
+    'utente ritirato', 
+    'เกษียณ', 'neaktiven', 
+    'retirado', 
+    '위키백과탈퇴', 
+    'خانەنشین', 
+    'jo aktiv', 
+    'неактивен потребител'
+]
