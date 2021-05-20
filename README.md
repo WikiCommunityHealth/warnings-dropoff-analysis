@@ -1,4 +1,4 @@
-# Warnings.dropoff-analysis
+# Warnings-dropoff-analysis
 
 Repository which contains the scripts to retrive user warnings metrics from a MongoDB database.
 

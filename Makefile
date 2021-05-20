@@ -2,7 +2,7 @@
 PROJECT_NAME := warnings-dropoff-analysis
 PACKAGE_NAME := warnings_dropoff_analysis
 MAIN := -m $(PACKAGE_NAME)
-PROGRAM_FLAGS := Wikipedia-breaks-uw itwiki_users --output-compression gzip
+PROGRAM_FLAGS := Wikipedia-breaks-uw cawiki_users --output-compression gzip
 FUNCTION_TO_RUN := extract-user-warnings-metrics
 FUNCTION_SUB_COMMANDS := 6
 DOCS_FOLDER := docs
@@ -20,7 +20,7 @@ NONE := \033[0m
 
 # PLOTTER
 PLOTTER := plotter/retired_stats.py 
-PLOTTER_ARGV := it
+PLOTTER_ARGV := es
 
 # RULES
 

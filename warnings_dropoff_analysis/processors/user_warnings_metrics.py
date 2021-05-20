@@ -24,9 +24,10 @@ def extract_metrics(
 
     print('Current count of elements in the collection: {}'.format(collection.num_documents))
     counter = 0
+
     # filter the users: only those who have received some warnings
-    for user in collection.service.find({'user_warnings_received': { "$exists": True }}):
-        # retirement metrics
+    for user in collection.service.find({'user_warnings_recieved': { "$exists": True }}):
+        
         metrics, ambiguous = retired_extractor.extract_metrics(user, month_to_be_considered_retired)
 
         # interested only in retired users

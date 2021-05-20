@@ -138,7 +138,7 @@ def retrieve_warninigs(user: dict) -> Tuple[dict, dict, dict]:
         'not_serious_substituted': 0
     }
 
-    for uw in user['user_warnings_received']:
+    for uw in user['user_warnings_recieved']:
         if not last_warnings[uw['category']]:
             last_warnings[uw['category']] = dict()
 
@@ -255,8 +255,9 @@ def retrieve_activities(declared_retirement: bool, retirement_date: Optional[dat
     first_edit_date_year =  min(int(k) for k in user['events']['per_month'])
     first_edit_month = min(int(k) for k in user['events']['per_month'][str(first_edit_date_year)])
 
-    for year, month in month_year_iter(first_edit_month, first_edit_date_year, last_edit.month + 1, last_edit.year):
-        
+    end_date =max([last_edit, monthdelta(datetime.utcnow(), -6)])
+
+    for year, month in month_year_iter(first_edit_month, first_edit_date_year, end_date.month + 1, end_date.year):
         if month < 10:
             month = '0{}'.format(month)
         else:
