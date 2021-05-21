@@ -7,10 +7,10 @@ from plotter.utils import (
     plot_line_chart, 
     user_data_extraction, 
     create_folder_if_not_exists,
-    z_score_user_activity_amount_6_month_interval
+    z_score_user_activity_amount_month_interval
 )
 
-def plot_warnings_stats(file_path: str) -> None:
+def plot_warnings_stats(file_path: str, month_interval: int) -> None:
     """
     Plots some graphs about the users who have recieved at least a warning of medium severity
 
@@ -111,9 +111,9 @@ def plot_warnings_stats(file_path: str) -> None:
             ylabel = 'user activity',
             xlabel = 'date',
             vlinesx = [
-                (user_data.query('serious_line == serious_line')[['serious_line']]['serious_line'], 'red'),
-                (user_data.query('warning_line == warning_line')[['warning_line']]['warning_line'], 'orange'),
-                (user_data.query('not_serious_line == not_serious_line')[['not_serious_line']]['not_serious_line'], 'green')
+                (user_data.query('serious_line == serious_line')[['serious_line']]['serious_line'], 'red', 'serious warning received'),
+                (user_data.query('warning_line == warning_line')[['warning_line']]['warning_line'], 'orange', 'warning received'),
+                (user_data.query('not_serious_line == not_serious_line')[['not_serious_line']]['not_serious_line'], 'green', 'not serious warning received')
             ], 
             ymin = 0, 
             ymax = user_data['activities count'].max()
@@ -127,10 +127,11 @@ def plot_warnings_stats(file_path: str) -> None:
         else:
             last_serious_date = None
         # compute the z-score
-        exists, zscore_data = z_score_user_activity_amount_6_month_interval(
+        exists, zscore_data = z_score_user_activity_amount_month_interval(
             x = user_data['date'],
             y = user_data,
-            vlinesx = (last_serious_date, 'red')
+            vlinesx = (last_serious_date, 'red'),
+            month_interval=month_interval
         )
         if exists:
             min_date = zscore_data['date'].min()
@@ -143,9 +144,9 @@ def plot_warnings_stats(file_path: str) -> None:
                 ylabel = 'user activity z-score',
                 xlabel = 'date',
                 vlinesx = [
-                    (user_data.loc[(pd.isnull(user_data['serious_line']) == False) & (user_data['date'] > min_date), ['serious_line']]['serious_line'], 'red'),
-                    (user_data.loc[(pd.isnull(user_data['warning_line']) == False) & (user_data['date'] > min_date), ['warning_line']]['warning_line'], 'orange'),
-                    (user_data.loc[(pd.isnull(user_data['not_serious_line']) == False) & (user_data['date'] > min_date), ['not_serious_line']]['not_serious_line'], 'green')
+                    (user_data.loc[(pd.isnull(user_data['serious_line']) == False) & (user_data['date'] > min_date), ['serious_line']]['serious_line'], 'red', 'serious warning received'),
+                    (user_data.loc[(pd.isnull(user_data['warning_line']) == False) & (user_data['date'] > min_date), ['warning_line']]['warning_line'], 'orange', 'warning received'),
+                    (user_data.loc[(pd.isnull(user_data['not_serious_line']) == False) & (user_data['date'] > min_date), ['not_serious_line']]['not_serious_line'], 'green', 'not serious warning received')
                 ], 
                 ymin = zscore_data['activities z-score'].min(), 
                 ymax = zscore_data['activities z-score'].max()
@@ -155,6 +156,9 @@ def plot_warnings_stats(file_path: str) -> None:
 
 if __name__ == '__main__':
     lang = argv[1]
+    month_interval = 12
+    if len(argv) > 2:
+        month_interval = int(argv[2])
     path = get_file_path(lang)
     create_folder_if_not_exists(lang)
-    plot_warnings_stats(path)
+    plot_warnings_stats(path, month_interval)

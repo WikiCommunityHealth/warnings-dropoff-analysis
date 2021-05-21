@@ -1,4 +1,3 @@
-from sys import stderr
 import pandas as pd
 import os
 import math
@@ -146,7 +145,7 @@ def plot_line_chart(x: pd.Series, y: list[Tuple[pd.Series, str]], title: str, yl
     plt.savefig('{}/{}.{}'.format(output_folder, title, EXT))
     plt.close()
 
-def plot_line_chart_with_vertical_lines(x: pd.Series, y: list[Tuple[pd.Series, str]], title: str, ylabel: str, xlabel: str, vlinesx: list[Tuple[pd.Series, str]], ymin: int, ymax: int) -> None:
+def plot_line_chart_with_vertical_lines(x: pd.Series, y: list[Tuple[pd.Series, str]], title: str, ylabel: str, xlabel: str, vlinesx: list[Tuple[pd.Series, str, str]], ymin: int, ymax: int) -> None:
     """
     Plots a basic line chart in a figure
 
@@ -160,16 +159,22 @@ def plot_line_chart_with_vertical_lines(x: pd.Series, y: list[Tuple[pd.Series, s
         ymin (int): minimum y value for the vertical line
         ymax (int): maximum y value for the vertical line
     """
+    lines = list()
+    labels = list()
     plt.figure(figsize=(16,8))
     for line, label in y:
-        plt.plot(x, line, label = label)
-    for x, color in vlinesx:
-        plt.vlines(x = x, ymin = ymin, ymax = ymax, color = color, linestyles='dashed')
-    plt.legend()
+        line, = plt.plot(x, line, label = label)
+        lines.append(line)
+        labels.append(label)
+    for x, color, label in vlinesx:
+        if not x.empty:
+            line = plt.vlines(x = x, ymin = ymin, ymax = ymax, color = color)
+            lines.append(line)
+            labels.append(label)
+    plt.legend(lines, labels)
     plt.title(title, fontsize=16)
     plt.ylabel(ylabel)
     plt.xlabel(xlabel)
-    plt.legend()
     plt.savefig('{}/{}.{}'.format(output_folder, title, EXT))
     plt.close()
 
@@ -192,9 +197,9 @@ def month_year_iter(start_month, start_year, end_month, end_year):
         y, m = divmod( ym, 12 )
         yield y, m + 1
 
-def z_score_user_activity_amount_6_month_interval(x: pd.Series, y: pd.Series, vlinesx: Tuple[pd.Series, str]) -> Tuple[bool, pd.DataFrame]:
+def z_score_user_activity_amount_month_interval(x: pd.Series, y: pd.Series, vlinesx: Tuple[pd.Series, str], month_interval: int) -> Tuple[bool, pd.DataFrame]:
     """
-    Computes the z-score on the user activity, before and after six months, the user has received the last serious warnings date, 
+    Computes the z-score on the user activity, before and after twelve months, the user has received the last serious warnings date, 
     stored in the vlinesx tuple
 
     Args:
@@ -205,14 +210,14 @@ def z_score_user_activity_amount_6_month_interval(x: pd.Series, y: pd.Series, vl
     Returns:
         Tuple[bool, pd.DataFrame]: (the zscore can be computed, pandas dataframe storing the z-score of the user's activity)
     """
-    # compute the z-score in the 6 month interval
+    # compute the z-score in the 24 month interval
     # https://en.wikipedia.org/wiki/Standard_score
     
     if not vlinesx[0]:
         return False, None
     
-    start_date = monthdelta(parse(vlinesx[0]), -6)
-    end_date = monthdelta(parse(vlinesx[0]), +6)
+    start_date = monthdelta(parse(vlinesx[0]), -month_interval)
+    end_date = monthdelta(parse(vlinesx[0]), +month_interval)
     mean = 0
     mean_values = list()
     dates = list()

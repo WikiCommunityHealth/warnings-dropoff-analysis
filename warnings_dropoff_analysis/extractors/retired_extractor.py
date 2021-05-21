@@ -49,7 +49,7 @@ def monthdelta(date, delta):
     d = min(date.day, calendar.monthrange(y, m)[1])
     return date.replace(day=d,month=m, year=y)
 
-def extract_metrics(user: dict, month_to_be_considered_retired: int) -> Tuple[Optional[UserMetrics], bool]:
+def extract_metrics(user: dict, month_to_be_considered_retired: int, month_average_calculus: int) -> Tuple[Optional[UserMetrics], bool]:
     """
     Main method to extract the drop-off metrics
 
@@ -81,7 +81,7 @@ def extract_metrics(user: dict, month_to_be_considered_retired: int) -> Tuple[Op
     # warnings metrics
     last_warnings, warnings_count, warnings_history = retrieve_warninigs(user)
     # edits metrics
-    edit_count_after_retirement, average_metrics, edit_history = retrieve_activities(has_template, retire_date, user, last_warnings, last_edit_date)
+    edit_count_after_retirement, average_metrics, edit_history = retrieve_activities(has_template, retire_date, user, last_warnings, last_edit_date, month_average_calculus)
 
     return UserMetrics(
         name = user['username'],
@@ -212,7 +212,7 @@ def retired_edit_treshold_extractor(is_retired: bool, user: dict, month_to_be_co
         drop_off = True
     return last_edit_date, drop_off, False
 
-def retrieve_activities(declared_retirement: bool, retirement_date: Optional[datetime], user: dict, last_warnings: dict, last_edit: datetime) -> Tuple[int, dict, dict]:  
+def retrieve_activities(declared_retirement: bool, retirement_date: Optional[datetime], user: dict, last_warnings: dict, last_edit: datetime, month_interval: int) -> Tuple[int, dict, dict]:  
     """
     It retrieves the metrics associated with the user's edits
 
@@ -255,7 +255,7 @@ def retrieve_activities(declared_retirement: bool, retirement_date: Optional[dat
     first_edit_date_year =  min(int(k) for k in user['events']['per_month'])
     first_edit_month = min(int(k) for k in user['events']['per_month'][str(first_edit_date_year)])
 
-    end_date =max([last_edit, monthdelta(datetime.utcnow(), -6)])
+    end_date =max([last_edit, monthdelta(datetime.utcnow(), - month_interval)])
 
     for year, month in month_year_iter(first_edit_month, first_edit_date_year, end_date.month + 1, end_date.year):
         if month < 10:
@@ -299,9 +299,9 @@ def retrieve_activities(declared_retirement: bool, retirement_date: Optional[dat
                 for key, value in target.items():
                     # we are counting 6 month before and afer the last warning to compute the average count
                     if last_warnings[key]:
-                        is_before_6_month: bool = (value == 'before' and datetime(year, i_month, 1) >= monthdelta(last_warnings[key]['date'].replace(tzinfo=None), -6))
-                        is_after_6_month: bool = (value == 'after' and datetime(year, i_month, 1) <= monthdelta(last_warnings[key]['date'].replace(tzinfo=None), +6))
-                        if is_before_6_month or is_after_6_month:
+                        is_before_month: bool = (value == 'before' and datetime(year, i_month, 1) >= monthdelta(last_warnings[key]['date'].replace(tzinfo=None), -month_interval))
+                        is_after_month: bool = (value == 'after' and datetime(year, i_month, 1) <= monthdelta(last_warnings[key]['date'].replace(tzinfo=None), +month_interval))
+                        if is_before_month or is_after_month:
                             average_metrics[key][value] += total_activities
                             average_metrics[key]['months_{}'.format(value)] += 1
         else:
