@@ -66,7 +66,7 @@ To connect it to a remote one you can add a  `.env ` file writing the connection
 echo '[your mongodb connection string]' > .env
 ```
 
-### Note about the graphs scripts
+### Note about the chart scripts
 
 Be careful with the plot scripts, since `pandas` memory overhead to instantiate the DataFrame structure is extremely RAM consuming.
 
@@ -207,9 +207,9 @@ Or you can open it directly with your browser using `xdg-open`
 make openDoc
 ```
 
-## Graphs
+## Chart
 
-Here, are listed the graphs produced by the scripts stored in the `plotter` folder
+Here, are listed the Chart produced by the scripts stored in the `plotter` folder
 
 ### Users who have declared their withdraw from Wikipedia
 
