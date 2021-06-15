@@ -1,6 +1,6 @@
 from .. import UserMetrics
-from datetime import datetime, timedelta
-from .constants import retired_template_list
+from datetime import datetime
+from .constants import retired_template_list, banned_template_list
 from typing import Tuple, Optional
 from dateutil import parser
 import calendar
@@ -75,13 +75,33 @@ def extract_metrics(user: dict, month_to_be_considered_retired: int, month_avera
     # retire date
     if 'from_date' in retirement_info:
         retire_date = retirement_info['from_date']
+        retirement_template_name = retirement_info['name']
+        retirement_parameters = retirement_info['parameters']
     else:
         retire_date = None
+        retirement_template_name = None
+        retirement_parameters = None
 
     # warnings metrics
-    last_warnings, warnings_count, warnings_history = retrieve_warninigs(user)
+    transcluded_user_warnings, last_warnings, warnings_count, warnings_history = retrieve_warninigs(user, last_edit_date)
+    
     # edits metrics
     edit_count_after_retirement, average_metrics, edit_history = retrieve_activities(has_template, retire_date, user, last_warnings, last_edit_date, month_average_calculus)
+
+    if not 'date' in last_warnings['serious']:
+        last_warnings['serious']['date'] = None
+        last_warnings['serious']['name'] = None
+    
+    if not 'date' in last_warnings['warning']:
+        last_warnings['warning']['date'] = None
+        last_warnings['warning']['name'] = None
+
+    if not 'date' in last_warnings['not_serious']:
+        last_warnings['not_serious']['date'] = None
+        last_warnings['not_serious']['name'] = None
+
+    # if the user is banned
+    banned = is_banned(last_warnings['serious']['name'])
 
     return UserMetrics(
         name = user['username'],
@@ -89,13 +109,21 @@ def extract_metrics(user: dict, month_to_be_considered_retired: int, month_avera
         # controllare se last edit è un campo
         retirement_declared = has_template,
         retire_date = retire_date,
+        retirement_parameters = retirement_parameters,
+        retirement_template_name = retirement_template_name,
         last_edit_month = last_edit_date.month,
         last_edit_year =  last_edit_date.year,
         edit_count_after_retirement = edit_count_after_retirement,
         # last elements
         last_serious_warning = last_warnings['serious'],
+        last_serious_warning_name = last_warnings['serious']['name'],
+        last_serious_warning_date = last_warnings['serious']['date'],
         last_normal_warning = last_warnings['warning'],
+        last_normal_warning_name = last_warnings['warning']['name'],
+        last_normal_warning_date = last_warnings['warning']['date'],
         last_not_serious_warning = last_warnings['not_serious'],
+        last_not_serious_warning_name = last_warnings['not_serious']['name'],
+        last_not_serious_warning_date = last_warnings['not_serious']['date'],
         # average before
         average_edit_count_before_last_serious_warning_date = average_metrics['serious']['before'],
         average_edit_count_before_last_normal_warning_date = average_metrics['warning']['before'],
@@ -113,10 +141,28 @@ def extract_metrics(user: dict, month_to_be_considered_retired: int, month_avera
         count_not_serious_templates_substituted = warnings_count['not_serious_substituted'],
         # history
         edit_history = edit_history,
-        warnings_history = warnings_history
+        warnings_history = warnings_history,
+        transcluded_user_warnings = transcluded_user_warnings,
+        sex = user['sex'],
+        banned = banned
     ), ambiguous
 
-def retrieve_warninigs(user: dict) -> Tuple[dict, dict, dict]:
+def is_banned(last_warning_name: Optional[str]) -> bool:
+    """
+    Returns whether the user is banned or not
+
+    Args:
+        last_warning_name (Optional[str]): last high severity user warning received
+
+    Returns:
+        banned (bool): if the user is banned or not
+    """
+    banned = False
+    if last_warning_name and last_warning_name in banned_template_list:
+        banned = True
+    return banned
+
+def retrieve_warninigs(user: dict, last_edit_date: datetime) -> Tuple[dict, dict, dict]:
     """
     It extracts the metrics associated with the user warnings
     
@@ -138,12 +184,23 @@ def retrieve_warninigs(user: dict) -> Tuple[dict, dict, dict]:
         'not_serious_substituted': 0
     }
 
+    transcluded_templates = list()
+
     for uw in user['user_warnings_recieved']:
-        if not last_warnings[uw['category']]:
-            last_warnings[uw['category']] = dict()
+        
+        if not uw['transcluded']:
+            continue
+
+        # transcluded template received and the date
+        transcluded_templates.append({'name': uw['user_warning_name'], 'date': uw['parameters'][-1]['timestamp']})
 
         for param in uw['parameters']:
             init_date = parser.parse(param['timestamp'])
+
+            # not interested in the warning that the user may have received after the last edit
+            if init_date.replace(tzinfo=None) > last_edit_date:
+                break
+
             if not 'date' in last_warnings[uw['category']] or last_warnings[uw['category']]['date'] < init_date:
                 last_warnings[uw['category']]['name'] = uw['user_warning_name']
                 last_warnings[uw['category']]['date'] = init_date
@@ -153,7 +210,7 @@ def retrieve_warninigs(user: dict) -> Tuple[dict, dict, dict]:
             for stat in user['user_warnings_stats'][year][month]:
                 counts_uw[stat] += user['user_warnings_stats'][year][month][stat]
 
-    return last_warnings, counts_uw, user['user_warnings_stats']
+    return transcluded_templates, last_warnings, counts_uw, user['user_warnings_stats']
 
 def retired_template_extractor(user: dict) -> Tuple[bool, dict]:
     """
@@ -181,6 +238,7 @@ def retired_template_extractor(user: dict) -> Tuple[bool, dict]:
             has_retired_template = True
             retired_template['name'] = wb['name']
             retired_template['from_date'] = parser.parse(wb['from_date'])
+            retired_template['parameters'] = wb['parameters']
 
     return has_retired_template, retired_template
 
@@ -224,7 +282,7 @@ def retrieve_activities(declared_retirement: bool, retirement_date: Optional[dat
         last_edit (datetime): last edit
 
     Returns:
-        list[int, dict, dict]: number of edits after the retirement (if specified), he metrics related to the average count of edits, and the edit history of the user
+        list[int, dict, dict]: number of edits after the retirement (if specified), the metrics related to the average count of edits, and the edit history of the user
     """
     
     average_metrics: dict = {
@@ -284,11 +342,10 @@ def retrieve_activities(declared_retirement: bool, retirement_date: Optional[dat
         if s_year in user['events']['per_month']:
             if month in user['events']['per_month'][s_year]:
                 total_activities = 0
-                for namespace in user['events']['per_month'][s_year][month]:
+                for namespace in user['events']['per_month'][s_year][month]['namespaces']:
                     if namespace in namespaces:
-                        for categories in user['events']['per_month'][s_year][month][namespace]:
-                            total_activities += user['events']['per_month'][s_year][month][namespace][categories]
-
+                        for categories in user['events']['per_month'][s_year][month]['namespaces'][namespace]:
+                            total_activities += user['events']['per_month'][s_year][month]['namespaces'][namespace][categories]
                 
                 if declared_retirement and datetime(year, i_month, 1) > retirement_date.replace(tzinfo=None):
                     edit_count_after_retirement += total_activities

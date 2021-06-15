@@ -33,3 +33,30 @@ retired_template_list = [
     'jo aktiv', 
     'неактивен потребител'
 ]
+
+# ban template words list
+banned_template_list = [
+    'bloccoinfinito', 
+    'uw-botuhblock', 
+    'uw-adminuhblock', 
+    'uw-uhblock-double', 
+    'user expelled', 
+    'sockpuppet bloccato', 
+    'títere', 
+    'blocked impersonator', 
+    'sockmasterproven', 
+    'arbcomblock', 
+    'uw-vaublock', 
+    'uw-upeblock', 
+    'uw-nothereblock', 
+    'wmf-legal banned user', 
+    'uw-blockindef', 
+    'uw-acpblockindef', 
+    'sspblock', 
+    'sockblock', 
+    'uw-pblockindef', 
+    'uw-uhblock', 
+    'banned user', 
+    'uw-cabalblock', 
+    'vandalo recidivo'
+]

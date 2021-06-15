@@ -36,9 +36,6 @@ wiki_lang/
 output/*
 !output/.gitkeep
 
-# loaders folder
-loaders
-
 # plot folder
 plots/*
 !plots/.gitkeep

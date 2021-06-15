@@ -1,5 +1,5 @@
 from sys import argv
-import pandas as pd      
+import pandas as pd
 from plotter.utils import get_file_path, plot_bar_chart, create_folder_if_not_exists
 
 def count_of_edits_bar_chart(categories: list[int], df: pd.DataFrame, field: str, title: str,  xlabel: str, ylabel: str) -> None:
@@ -55,15 +55,18 @@ def plot_retired_stats(file_path: str) -> None:
     total_true = df.loc[df['edit_count_after_retirement'] < has_stopped_editing_treshold].shape[0]
     total_false = df.loc[df['edit_count_after_retirement'] >= has_stopped_editing_treshold].shape[0]
     total = total_true + total_false if total_true + total_false else 1
+    real_total = total_true + total_false
     plot_bar_chart(
-        title='Stop editing after retirement', 
+        title='Stop editing after retirement (treshold = 10)', 
         y=[
             (total_true/total) * 100,
             (total_false/total) * 100,
         ], 
         x=['Has stopped editing', 'Has continued editing'],
         xlabel = '', 
-        ylabel = 'Percentage of users'
+        ylabel = 'Percentage of users',
+        percentage = True,
+        text = ''.join(['Total retired users: ', str(real_total)])
     )
     # other chart
     print('Plotting chart n {}...'.format(chart_counter))
@@ -75,7 +78,25 @@ def plot_retired_stats(file_path: str) -> None:
         xlabel = 'Edits count', 
         ylabel = 'Number of users'
     )
-    print('Finished')
+    # grouped by sex
+    print('Plotting chart n {}...'.format(chart_counter))
+    chart_counter += 1
+    retired = df.loc[df['sex'].notna()]
+    total = retired.shape[0]
+    male_retired = retired.loc[retired['sex'] == True].shape[0]
+    female_retired = retired.loc[retired['sex'] == False].shape[0]
+    plot_bar_chart(
+        title='Retired users, grouped by sex', 
+        y = [
+            (male_retired/total) * 100, 
+            (female_retired/total) * 100
+        ], 
+        x = ['Men', 'Women'],
+        xlabel = '',
+        ylabel = 'Percentage of users',
+        text = 'Considered users: {}\n'.format(total)
+    )
+
 
 if __name__ == '__main__':
     lang = argv[1]

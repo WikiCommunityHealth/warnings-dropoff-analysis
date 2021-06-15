@@ -12,7 +12,7 @@ Clone this repository
 git clone https://github.com/WikiCommunityHealth/warnings-dropoff-analysis.git
 ```
 
-Create the poetry project virtual environment using your current python version
+Create the poetry project virtual environment using your current Python version
 
 ```bash
 make env
@@ -26,7 +26,7 @@ make install
 
 ## Usage
 
-After having installed the dependencies in the poetry virtual environment, you can run the following command
+Only after having installed the dependencies in the poetry virtual environment, can you run the following command
 
 ```bash
 poetry run python -m warnings_dropoff_analysis db-name collection-name [--output-compression gzip] extract-user-warnings-metrics [month to consider the drop-off]
@@ -42,7 +42,7 @@ The result will be found in the `ouput` folder.
 
 ## Plots
 
-After the data have been retrieved, you can plot some basic stats by typing
+After the data has been retrieved, you can plot some basic statistics by typing
 
 ```bash
 poetry run python plotter/[plotter-stats-file].py [community-lang]
@@ -58,9 +58,9 @@ The produced figures can be found in the `plots` folder.
 
 ## Note
 
-The script by default tries to connect to the local MongoDB instance. 
+The script tries, by default, to connect to the local MongoDB instance. 
 
-To connect it to a remote one you can add a  `.env ` file writing the connection string within, following the  `.env.example` template file:
+So as to connect it to a remote one, you can add a  `.env ` file writing the connection string within, following the  `.env.example` template file:
 
 ```bash
 echo '[your mongodb connection string]' > .env
@@ -68,7 +68,7 @@ echo '[your mongodb connection string]' > .env
 
 ### Note about the chart scripts
 
-Be careful with the plot scripts, since `pandas` memory overhead to instantiate the DataFrame structure is extremely RAM consuming.
+Be careful with the plot scripts, since `pandas` memory overhead, to instantiate the DataFrame structure, is extremely RAM consuming.
 
 As a result, make sure you have enough free memory before running one of those scripts.
 
@@ -78,23 +78,37 @@ The data retrived by the script is in the following format:
 
 ```json
 {
-  "name": "<Name>",
-  "id": 22243,
-  "last_edit_month": 12,
-  "last_edit_year": 2015,
+  "name": "<name>",
+  "id": 21,
+  "last_edit_month": 2,
+  "last_edit_year": 2010,
   "retirement_declared": false,
   "retire_date": null,
+  "retirement_parameters": null,
+  "retirement_template_name": null,
   "edit_count_after_retirement": null,
   "last_serious_warning": {
-    "name": "avvisoimmagine",
-    "date": "2005-10-17 21:00:06+00:00"
+    "name": "avvisoimmagine2",
+    "date": "200_-0_-1_ 2_:1_:4_+00:00"
   },
-  "last_normal_warning": {},
-  "last_not_serious_warning": {},
-  "average_edit_count_before_last_serious_warning_date": 0.020689655172413793,
-  "average_edit_count_before_last_normal_warning_date": 0.03267411865864144,
-  "average_edit_count_before_last_not_serious_warning_date": 0.03267411865864144,
-  "average_edit_count_after_last_serious_warning_date": 0.03983516483516483,
+  "last_serious_warning_name": "avvisoimmagine2",
+  "last_serious_warning_date": "200_-0_-1_ 2_:1_:4_+00:00",
+  "last_normal_warning": {
+    "date": null,
+    "name": null
+  },
+  "last_normal_warning_name": null,
+  "last_normal_warning_date": null,
+  "last_not_serious_warning": {
+    "date": null,
+    "name": null
+  },
+  "last_not_serious_warning_name": null,
+  "last_not_serious_warning_date": null,
+  "average_edit_count_before_last_serious_warning_date": 9.333333333333334,
+  "average_edit_count_before_last_normal_warning_date": 0,
+  "average_edit_count_before_last_not_serious_warning_date": 0,
+  "average_edit_count_after_last_serious_warning_date": 0.0036443148688046646,
   "average_edit_count_after_last_normal_warning_date": 0,
   "average_edit_count_after_last_not_serious_warning_date": 0,
   "count_serious_templates_transcluded": 1,
@@ -161,7 +175,9 @@ The data retrived by the script is in the following format:
         "serious_transcluded": 0
       }
     }
-  }
+  },
+  "sex": null, 
+  "banned": false
 }
 ```
 
@@ -175,9 +191,18 @@ A brief description of the fields
 - `last_edit_year` year of the last edit date
 - `retirement_declared` is a boolean field representing, whether the user has specified a retirement template or not, on the user page or user talk page
 - `retire_date` the retirement date if specified
-- `last_serious_warning` last transcluded serious warning
+- `retirement_parameters`: parameters specified in the retired template
+- `retirement_template_name`: name of the retired template
+- `edit_count_after_retirement`: activity count after the retirement date
+- `last_serious_warning`: last transcluded serious warning
+- `last_serious_warning_name`: the name of the last high severity warning received
+- `last_serious_warning_date`: the date of the last high severity warning received
 - `last_normal_warning` last transcluded warning of medium severity
+- `last_normal_warning_name`: the name of the last medium severity warning received
+- `last_normal_warning_date`: the date of the last medium severity warning received
 - `last_not_serious_warning` last transcluded non serious warning
+- `last_not_serious_warning_name`: the name of the last low severity warning received
+- `last_not_serious_warning_date`: the date of the last low severity warning received
 - `average_edit_count_before_last_serious_warning_date` average count of actions the user has made before the last serious warning date (in the range of [date - 12 months, date])
 - `average_edit_count_before_last_normal_warning_date` average count of actions the user has made before the last warning date (in the range of [date - 12 months, date])
 - `average_edit_count_before_last_not_serious_warning_date` average count of action the user has made before the last not serious warning date (in the range of [date - 12 months])
@@ -192,10 +217,12 @@ A brief description of the fields
 - `count_not_serious_templates_substituted` count of the substituted not serious warnings templates
 - `edit_history` history of the user's activity per month
 - `warnings_history`  history of the user's warnings per month
+- `sex`: the user's sex if specified
+- `banned`: whether the user is banned or not
 
 ## Code documentation
 
-To get the code documentation you can use [pdoc](https://github.com/pdoc3/pdoc) by typing
+In order to get the code documentation, you can use [pdoc](https://github.com/pdoc3/pdoc) by typing
 
 ```bash
 make doc
@@ -209,7 +236,7 @@ make openDoc
 
 ## Chart
 
-Here, are listed the Chart produced by the scripts stored in the `plotter` folder
+Here, the plots, produced by the scripts stored in the `plotter` folder, are listed 
 
 ### Users who have declared their withdraw from Wikipedia
 
@@ -217,8 +244,9 @@ Here, are listed the Chart produced by the scripts stored in the `plotter` folde
 
 Considering only the users who have declared their withdrawal from Wikipedia:
 
-* A bar chart which represents the percentage of users who have stopped editing in Wikipedia, and the percentage of users who have continued to be active.
-* A bar chart which represent the number of edits the users have made after having declared their withdrawal.
+* A bar chart which indicates the percentage of users who have stopped editing in Wikipedia, and the percentage of users who have continued to be active.
+* A bar chart which shows the number of edits the users have made after having declared their withdrawal.
+* A bar chart which illustrates the percentage of men and women who have declared the withdrawal from Wikipedia
 
 ### Users who have received at least a warning of medium severity
 
@@ -226,18 +254,9 @@ Considering only the users who have declared their withdrawal from Wikipedia:
 
 Considering only the users who have received at least a serious warning:
 
-* A bar chart which represents the percentage of users who have stopped editing in Wikipedia after the last serious warning received, and the percentage of users who have continued to be active.
-* A bar chart which represent the number of users who have decreased their activity in the community in the time interval of the last serious warning received.
+* A bar chart which indicates the number of users who have decreased their activity in the community within the time interval of the last serious warning received.
+* The graph above but considering only men and women
+* A bar chart which compares the percentage of women and men who have decreased their activity
 * Considering the five users who have received the highest amount of edits:
-    - A line chart which represent the user's activity over the months, with some vertical lines which indicate one or more warning.
-    - A line chart representing the [`z-score`](https://en.wikipedia.org/wiki/Standard_score) of the user history in the time interval of the last serious user warning received
- 
-#### The outcomes of the `warning_stats.py` script is:
-
-Considering only the users who have received at least a warning of medium severity:
-
-* A bar chart which represents the percentage of users who have stopped editing in Wikipedia after the last medium severity warning received, and the percentage of users who have continued to be active.
-* A bar chart which represent the number of users who have decreased their activity in the community in the time interval of the last medium severity warning received.
-* Considering the five users who have received the highest amount of edits:
-    - A line chart which represent the user's activity over the months, with some vertical lines which indicate one or more warning.
-    - A line chart representing the [`z-score`](https://en.wikipedia.org/wiki/Standard_score) of the user history in the time interval of the last medium severity user warning received
+    - A line chart which shows the user activity over months with some vertical lines, which indicate one or more warning.
+    - A line chart illustrating the [`z-score`](https://en.wikipedia.org/wiki/Standard_score) of the user history within the time interval of the last serious user warning received
