@@ -1,9 +1,12 @@
 from sys import argv
 from pymongo import MongoClient, UpdateOne
+import os
 
 def get_file_path(lang: str) -> str:
-    file_path = f'wiki_sex/{lang}.tsv'
-    return file_path
+    for filename in os.listdir('wiki_sex'):
+        if filename.startswith(f'{lang}') and filename.endswith('.tsv'):
+            return f'wiki_sex/{filename}'
+    return None
 
 def get_users_collection(lang: str):
     client = MongoClient()
@@ -33,4 +36,7 @@ def upload_sex(lang: str, file_path: str) -> None:
 if __name__ == '__main__':
     lang = argv[1]
     path = get_file_path(lang)
+    if not path:
+        print('Daaset file not found')
+        exit(1)
     upload_sex(lang, path)

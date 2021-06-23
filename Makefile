@@ -31,6 +31,7 @@ PLOTTER_ARGV := it
 # Run with poetry
 run:
 	$(ECHO) '$(BLUE)Running the application...$(NONE)'
+	@echo $(MAIN) $(PROGRAM_FLAGS) $(FUNCTION_TO_RUN) $(FUNCTION_SUB_COMMANDS)
 	@poetry run python $(MAIN) $(PROGRAM_FLAGS) $(FUNCTION_TO_RUN) $(FUNCTION_SUB_COMMANDS)
 	$(ECHO) '$(BLUE)Done$(NONE)'
 

@@ -234,7 +234,7 @@ Or you can open it directly with your browser using `xdg-open`
 make openDoc
 ```
 
-## Chart
+## Charts
 
 Here, the plots, produced by the scripts stored in the `plotter` folder, are listed 
 
@@ -260,3 +260,17 @@ Considering only the users who have received at least a serious warning:
 * Considering the five users who have received the highest amount of edits:
     - A line chart which shows the user activity over months with some vertical lines, which indicate one or more warning.
     - A line chart illustrating the [`z-score`](https://en.wikipedia.org/wiki/Standard_score) of the user history within the time interval of the last serious user warning received
+
+## Run
+
+In order to call the scripts on all the MongoDB database collections it is possibile to run the `run` bash script.
+
+```bash
+./run.sh
+```
+
+First of all, be sure you have modified all the readonly variables so as to fit your needs; feel free to change whatever you want.
+
+The dependencies of the previously defined script are
+
+* [GNU parallel](https://www.gnu.org/software/parallel/)

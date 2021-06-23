@@ -1,10 +1,14 @@
 from sys import argv
+import gzip
 from pymongo import MongoClient, UpdateOne
 from json import loads
+import os
 
 def get_file_path(lang: str) -> str:
-    file_path = f'wiki_lang/{lang}wiki.json.gz'
-    return file_path
+    for filename in os.listdir('wiki_lang'):
+        if filename.startswith(f'{lang}') and filename.endswith('dataset.json.gz'):
+            return f'wiki_lang/{filename}'
+    return None
 
 def get_users_collection(lang: str):
     client = MongoClient()
@@ -13,10 +17,12 @@ def get_users_collection(lang: str):
 
 def upload_lang(lang: str, file_path: str) -> None:
     print('Start updating users')
-    with open(file_path, 'r') as input:
+    with gzip.open(file_path, 'rt') as input:
         bulk_updates = []
         users_collection = get_users_collection(lang)
+        a = 0
         for line in input:
+            a += 1
             obj = loads(line.rstrip('\n'))
             username = obj['name'].split('/', 1)[0]
             languages = obj['languages']
@@ -31,4 +37,7 @@ def upload_lang(lang: str, file_path: str) -> None:
 if __name__ == '__main__':
     lang = argv[1]
     path = get_file_path(lang)
+    if not path:
+        print('Daaset file not found')
+        exit(1)
     upload_lang(lang, path)
