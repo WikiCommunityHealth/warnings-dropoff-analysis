@@ -263,7 +263,7 @@ Considering only the users who have received at least a serious warning:
 
 ## Run
 
-In order to call the scripts on all the MongoDB database collections it is possibile to run the `run` bash script.
+In order to call the scripts on all the MongoDB database collections, it is possibile to run the `run` bash script.
 
 ```bash
 ./run.sh
@@ -274,3 +274,23 @@ First of all, be sure you have modified all the readonly variables so as to fit 
 The dependencies of the previously defined script are
 
 * [GNU parallel](https://www.gnu.org/software/parallel/)
+
+## Docker
+
+So as to call the entire program in a [`Docker`](https://www.docker.com/) cotainer, a `Dockerfile` has been provided.
+
+First, you need to change the content of the `run.sh` file in order to fill your requirements, such as the files' locations and which operation should be carried out by the script.
+
+Then, you can build the Docker image by typing:
+
+```bash
+docker build -t warning-dropoff .
+```
+
+Then, make sure you have your local MongoDB instance working with all the required data.
+
+Finally, run the docker image:
+
+```bash
+docker run --network="host" warning-dropoff ./run.sh
+```

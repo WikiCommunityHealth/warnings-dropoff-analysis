@@ -37,6 +37,6 @@ if __name__ == '__main__':
     lang = argv[1]
     path = get_file_path(lang)
     if not path:
-        print('Daaset file not found')
+        print('Dataset file not found')
         exit(1)
     upload_sex(lang, path)
