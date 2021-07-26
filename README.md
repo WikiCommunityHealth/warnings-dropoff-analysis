@@ -292,5 +292,5 @@ Then, make sure you have your local MongoDB instance working with all the requir
 Finally, run the docker image:
 
 ```bash
-docker run --network="host" warning-dropoff ./run.sh
+docker run --network="host" warning-dropoff
 ```

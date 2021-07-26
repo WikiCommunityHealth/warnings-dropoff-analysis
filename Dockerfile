@@ -40,3 +40,5 @@ COPY . .
 RUN make install
 # Making the run.sh executable
 RUN chmod +x run.sh
+# Run the run script
+CMD ./run.sh
