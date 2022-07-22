@@ -116,7 +116,7 @@ if __name__ == '__main__':
                 user_name = data['name']
                 id_talk_page = int(data['id_talk_page'])
 
-                for uw in data['user_warnings_recieved']:
+                for uw in data['user_warnings_received']:
                     uw_name = uw['user_warning_name']
                     category = uw['category']
                     transcluded = 1 if uw['transcluded'] else 0

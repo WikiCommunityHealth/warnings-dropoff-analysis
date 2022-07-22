@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from typing import Iterator, Mapping
 from .. import DatabaseService, CollectionService
 from ..extractors import retired_extractor
@@ -5,6 +7,7 @@ from datetime import datetime
 import argparse
 import io
 import json
+
 
 def extract_metrics(
         collection: CollectionService, 
@@ -27,7 +30,7 @@ def extract_metrics(
     counter = 0
 
     # filter the users: only those who have received some warnings
-    for user in collection.service.find({'user_warnings_recieved': { "$exists": True }}):
+    for user in collection.service.find({'user_warnings_received': {"$exists": True }}):
         
         metrics, ambiguous = retired_extractor.extract_metrics(user, month_to_be_considered_retired, month_average_calculus)
 
@@ -83,7 +86,7 @@ def main(
             'end_time': None,
             'user_analyzed': 0
         },
-        'drop_off':{
+        'drop_off': {
             'retired_users': 0,
             'users_dropoff': 0,
             'ambiguous_users': 0,
