@@ -32,6 +32,10 @@ wiki_breaks/
 wiki_warnings/
 wiki_lang/
 
+# input folder
+input/*
+!input/.gitkeep
+
 # output folder
 output/*
 !output/.gitkeep
